@@ -83,6 +83,18 @@ function zoom_add_instance(stdClass $zoom, mod_zoom_mod_form $mform = null) {
         $zoom->password = '';
     }
 
+    // Handle weekdays if weekly recurring meeting selected.
+    if ($zoom->recurring && $zoom->recurrence_type == 2) {
+        $weekdayselected = [];
+        for ($i = 1; $i <= 7; $i++) {
+            $key = 'weekly_days_' . $i;
+            if (!empty($zoom->$key)) {
+                $weekdayselected[] = $zoom->$key;
+            }
+        }
+        $zoom->weekly_days = implode(',', $weekdayselected);
+    }
+
     $zoom->course = (int) $zoom->course;
 
     $response = $service->create_meeting($zoom);
@@ -133,6 +145,18 @@ function zoom_update_instance(stdClass $zoom, mod_zoom_mod_form $mform = null) {
 
     if (property_exists($zoom, 'requirepasscode') && empty($zoom->requirepasscode)) {
         $zoom->password = '';
+    }
+
+    // Handle weekdays if weekly recurring meeting selected.
+    if ($zoom->recurring && $zoom->recurrence_type == 2) {
+        $weekdayselected = [];
+        for ($i = 1; $i <= 7; $i++) {
+            $key = 'weekly_days_' . $i;
+            if (!empty($zoom->$key)) {
+                $weekdayselected[] = $zoom->$key;
+            }
+        }
+        $zoom->weekly_days = implode(',', $weekdayselected);
     }
 
     $DB->update_record('zoom', $zoom);

@@ -505,7 +505,8 @@ class mod_zoom_webservice {
             'settings' => array(
                 'host_video' => (bool) ($zoom->option_host_video),
                 'audio' => $zoom->option_audio
-            )
+            ),
+            'recurrence' => array()
         );
         if (isset($zoom->intro)) {
             $data['agenda'] = $zoom->intro;
@@ -539,6 +540,28 @@ class mod_zoom_webservice {
                     ZOOM_ENCRYPTION_TYPE_E2EE : ZOOM_ENCRYPTION_TYPE_ENHANCED;
             $data['settings']['waiting_room'] = (bool) ($zoom->option_waiting_room);
             $data['settings']['mute_upon_entry'] = (bool) ($zoom->option_mute_upon_entry);
+
+            // Add recurrence object.
+            if ($zoom->recurring) {
+                $data['recurrence']['type'] = $zoom->recurrence_type;
+                $data['recurrence']['repeat_interval'] = $zoom->repeat_interval;
+                if ($zoom->recurrence_type == 2) {
+                    $data['recurrence']['weekly_days'] = $zoom->weekly_days;
+                }
+                if ($zoom->recurrence_type == 3) {
+                    if ($zoom->monthly_repeat_option == 1){
+                        $data['recurrence']['monthly_day'] = $zoom->monthly_day;
+                    } else {
+                        $data['recurrence']['monthly_week'] = $zoom->monthly_week;
+                        $data['recurrence']['monthly_week_day'] = $zoom->monthly_week_day;
+                    }
+                }
+                if ($zoom->end_date_option == 2) {
+                    $data['recurrence']['end_times'] = $zoom->end_times;
+                } else {
+                    $data['recurrence']['end_date_time'] = gmdate('Y-m-d\TH:i:s\Z', $zoom->end_date_time);
+                }
+            }
         }
 
         if ($data['type'] == ZOOM_SCHEDULED_MEETING || $data['type'] == ZOOM_SCHEDULED_WEBINAR) {

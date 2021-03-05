@@ -38,6 +38,28 @@ define(['jquery'], function($) {
                     option_jbh.prop('checked', false);
                 }
             });
+
+            $('.repeat_interval').hide();
+            var repeat_select = $('select[name="recurrence_type"]');
+            if (repeat_select.val() > 0) {
+                if (repeat_select.val() == 1) {
+                    $('#interval_daily').show();
+                } else if (repeat_select.val() == 2) {
+                    $('#interval_weekly').show();
+                } else if (repeat_select.val() == 3) {
+                    $('#interval_monthly').show();
+                }
+            }
+            repeat_select.change(function() {
+                $('.repeat_interval').hide();
+                if (this.value == 1) {
+                    $('#interval_daily').show();
+                } else if (this.value == 2) {
+                    $('#interval_weekly').show();
+                } else if (this.value == 3) {
+                    $('#interval_monthly').show();
+                }
+            });
         }
     };
 });

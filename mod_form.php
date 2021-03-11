@@ -208,17 +208,8 @@ class mod_zoom_mod_form extends moodleform_mod {
         $mform->hideif('repeat_group', 'recurring', 'notchecked');
         $mform->disabledif('repeat_interval', 'recurrence_type', 'eq', '0');
 
-        $weekdayoptions = [
-            1 => 'Sunday',
-            2 => 'Monday',
-            3 => 'Tuesday',
-            4 => 'Wednesday',
-            5 => 'Thursday',
-            6 => 'Friday',
-            7 => 'Saturday'
-        ];
-
         // Weekly options.
+        $weekdayoptions = zoom_get_weekday_options();
         $group = [];
         foreach ($weekdayoptions as $key => $weekday) {
             $weekdayid = 'weekly_days_' . $key;
@@ -242,13 +233,7 @@ class mod_zoom_mod_form extends moodleform_mod {
         for ($i = 1; $i <= 31; $i++) {
             $monthoptions[$i] = $i;
         }
-        $monthlyweekoptions = [
-            -1 => 'Last',
-            1 => 'First',
-            2 => 'Second',
-            3 => 'Third',
-            4 => 'Fourth'
-        ];
+        $monthlyweekoptions = zoom_get_monthweek_options();
         
         $group = [];
         $group[] = $mform->createElement('radio', 'monthly_repeat_option', '', 'Day', 1);
@@ -557,7 +542,7 @@ class mod_zoom_mod_form extends moodleform_mod {
             if ($data['recurrence_type'] == 0) {
                 $errors['recurrence_type'] = get_string('err_recurrence_type', 'zoom');
             }
-            if ($data['recurrence_type'] == 2) {
+            if ($data['recurrence_type'] == '2') {
                 $weekdayselected = [];
                 for ($i = 1; $i <= 7; $i++) {
                     $key = 'weekly_days_' . $i;
@@ -574,21 +559,17 @@ class mod_zoom_mod_form extends moodleform_mod {
                 }
             }
 
-            if ($data['recurrence_type'] == 3) {
+            if ($data['recurrence_type'] == '3') {
                 // For monthly, max is 3 months.
                 if ($data['repeat_interval'] > 3) {
                     $errors['repeat_group'] = get_string('err_repeat_monthly_interval', 'zoom');
                 }
             }
 
-            if ($data['end_date_time'] < strtotime('today')) {
+            if ($data['end_date_option'] == '1' && $data['end_date_time'] < strtotime('today')) {
                 $errors['radioenddate'] = get_string('err_end_date', 'zoom');
             }
         }
-
-
-        // var_dump($errors);
-        // die;
 
         return $errors;
     }
